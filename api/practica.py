@@ -1,12 +1,18 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 from api.supabase_client import supabase
 
 app = Flask(__name__)
 CORS(app)
 
+# GET → sirve el HTML
+@app.route("/")
+def index():
+    return send_from_directory(".", "index.html")
+
+# POST → guarda en DB
 @app.route("/", methods=["POST"])
-def crear_registro():
+def guardar():
     data = request.json
 
     nombre = data.get("nombre")
@@ -17,14 +23,11 @@ def crear_registro():
     if not all([nombre, apellido, numero_id, color]):
         return jsonify({"error": "Faltan datos"}), 400
 
-    response = supabase.table("practica").insert({
+    res = supabase.table("practica").insert({
         "nombre": nombre,
         "apellido": apellido,
         "numero_id": numero_id,
         "color_favorito": color
     }).execute()
 
-    return jsonify({
-        "ok": True,
-        "inserted": response.data
-    })
+    return jsonify({"ok": True, "data": res.data})
