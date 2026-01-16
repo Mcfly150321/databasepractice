@@ -5,7 +5,7 @@ from api.supabase_client import supabase
 app = Flask(__name__)
 CORS(app)
 
-@app.route("/api/practica", methods=["POST"])
+@app.route("/", methods=["POST"])
 def crear_registro():
     data = request.json
 
@@ -24,4 +24,7 @@ def crear_registro():
         "color_favorito": color
     }).execute()
 
-    return jsonify({"status": "ok", "data": response.data})
+    return jsonify({
+        "ok": True,
+        "inserted": response.data
+    })
