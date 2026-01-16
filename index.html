@@ -8,83 +8,59 @@
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
+      padding: 40px;
     }
-
-    .card {
-      background: #020617;
-      padding: 20px;
-      border-radius: 10px;
-      width: 320px;
-      box-shadow: 0 0 20px rgba(0,0,0,.4);
-    }
-
     input, button {
-      width: 100%;
-      margin-top: 10px;
-      padding: 8px;
-      border-radius: 6px;
-      border: none;
+      display: block;
+      margin: 10px 0;
+      padding: 10px;
+      width: 300px;
     }
-
     button {
-      background: #22c55e;
-      color: black;
-      font-weight: bold;
       cursor: pointer;
-    }
-
-    #estado {
-      margin-top: 12px;
-      text-align: center;
     }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>Agregar registro</h2>
+  <h2>Agregar registro</h2>
 
-    <input id="nombre" placeholder="Nombre">
-    <input id="apellido" placeholder="Apellido">
-    <input id="numero_id" placeholder="Número ID">
-    <input id="color" placeholder="Color favorito">
+  <input id="nombre" placeholder="Nombre">
+  <input id="apellido" placeholder="Apellido">
+  <input id="numero_id" placeholder="Número ID">
+  <input id="color" placeholder="Color favorito">
 
-    <button onclick="guardar()">Guardar</button>
+  <button onclick="enviar()">Guardar</button>
 
-    <div id="estado"></div>
-  </div>
+  <p id="estado"></p>
 
   <script>
-    async function guardar() {
-      const estado = document.getElementById("estado");
-      estado.innerText = "Guardando...";
+    async function enviar() {
+      const estado = document.getElementById("estado")
 
       const data = {
         nombre: document.getElementById("nombre").value,
         apellido: document.getElementById("apellido").value,
         numero_id: document.getElementById("numero_id").value,
         color_favorito: document.getElementById("color").value
-      };
+      }
+
+      estado.innerText = "Enviando..."
 
       try {
         const res = await fetch("/api/practica", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(data)
-        });
+        })
 
         if (res.ok) {
-          estado.innerText = "Guardado correctamente ✔";
+          estado.innerText = "Guardado correctamente ✅"
         } else {
-          estado.innerText = "Error al guardar ❌";
+          estado.innerText = "Error al guardar ❌"
         }
-
       } catch (e) {
-        estado.innerText = "No se pudo conectar ❌";
+        estado.innerText = "No se pudo conectar con el servidor"
       }
     }
   </script>
