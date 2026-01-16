@@ -3,7 +3,7 @@ from flask_cors import CORS
 import os
 from supabase import create_client, Client
 
-# ---------- SUPABASE CLIENT ----------
+# ---------- SUPABASE ----------
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_ANON_KEY")
 
@@ -12,32 +12,29 @@ if not SUPABASE_URL or not SUPABASE_KEY:
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
-# ---------- FLASK APP ----------
+# ---------- FLASK ----------
 app = Flask(__name__)
 CORS(app)
 
-# ---------- GET: SERVIR HTML ----------
-@app.route("/", methods=["GET"])
+# GET → servir el HTML (IGUAL QUE TU EJEMPLO)
+@app.route("/")
 def index():
     return send_from_directory(".", "index.html")
 
-# ---------- POST: GUARDAR EN DB ----------
+# POST → guardar en la DB (MISMA RUTA, MISMO FETCH)
 @app.route("/", methods=["POST"])
 def guardar():
     try:
-        data = request.json
-        print("DATA RECIBIDA:", data)
+        datos = request.json
+        print("DATOS:", datos)
 
-        nombre = data.get("nombre")
-        apellido = data.get("apellido")
-        numero_id = data.get("numero_id")
-        color = data.get("color_favorito")
+        nombre = datos.get("nombre")
+        apellido = datos.get("apellido")
+        numero_id = datos.get("numero_id")
+        color = datos.get("color_favorito")
 
         if not all([nombre, apellido, numero_id, color]):
-            return jsonify({
-                "ok": False,
-                "error": "Faltan datos"
-            }), 400
+            return jsonify({"error": "Faltan datos"}), 400
 
         res = supabase.table("practica").insert({
             "nombre": nombre,
@@ -46,22 +43,13 @@ def guardar():
             "color_favorito": color
         }).execute()
 
-        print("SUPABASE RESPONSE:", res)
+        print("SUPABASE:", res)
 
         if res.error:
-            return jsonify({
-                "ok": False,
-                "error": res.error.message if hasattr(res.error, "message") else str(res.error)
-            }), 400
+            return jsonify({"error": str(res.error)}), 400
 
-        return jsonify({
-            "ok": True,
-            "data": res.data
-        })
+        return jsonify({"ok": True})
 
     except Exception as e:
-        print("ERROR BACKEND:", str(e))
-        return jsonify({
-            "ok": False,
-            "error": str(e)
-        }), 500
+        print("ERROR:", e)
+        return jsonify({"error": str(e)}), 500
